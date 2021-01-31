@@ -44,6 +44,7 @@ import {
 import {
   createAngularEslintJson,
   extraEslintDependencies,
+  updateNxJson,
 } from '../../utils/lint';
 import { names, offsetFromRoot } from '@nrwl/devkit';
 import { wrapAngularDevkitSchematic } from '@nrwl/devkit/ngcli-adapter';
@@ -853,6 +854,7 @@ export default function (schema: Schema): Rule {
       addEditorTsConfigReference(options),
       options.backendProject ? addProxyConfig(options) : noop(),
       options.strict ? enableStrictTypeChecking(options) : noop(),
+      updateNxJson(options),
       formatFiles(options),
     ])(host, context);
   };

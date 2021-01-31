@@ -82,7 +82,6 @@ describe('@nrwl/workspace:workspace', () => {
     ).recommendations;
 
     expect(recommendations).toEqual([
-      'ms-vscode.vscode-typescript-tslint-plugin',
       'esbenp.prettier-vscode',
     ]);
   });

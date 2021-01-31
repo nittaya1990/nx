@@ -14,6 +14,7 @@ import {
   updateJsonInTree,
   updateWorkspace,
   Linter,
+  NxJson,
 } from '@nrwl/workspace';
 import {
   angularDevkitVersion,
@@ -23,6 +24,7 @@ import {
 } from '../../utils/versions';
 import { Schema } from './schema';
 import { E2eTestRunner, UnitTestRunner } from '../../utils/test-runners';
+import { updateNxJson } from '../../utils/lint';
 
 const updateDependencies = (options: Pick<Schema, 'linter'>): Rule =>
   addDepsToPackageJson(
@@ -167,6 +169,7 @@ export default function (options: Schema): Rule {
     updateDependencies(options),
     addUnitTestRunner(options),
     addE2eTestRunner(options),
+    updateNxJson(options),
     formatFiles(),
   ]);
 }

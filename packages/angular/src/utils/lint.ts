@@ -1,3 +1,5 @@
+import { Rule } from '@angular-devkit/schematics';
+import { Linter, NxJson, updateJsonInTree } from '@nrwl/workspace';
 import { angularEslintVersion } from './versions';
 
 export const extraEslintDependencies = {
@@ -8,6 +10,22 @@ export const extraEslintDependencies = {
     '@angular-eslint/template-parser': angularEslintVersion,
   },
 };
+
+/**
+ * Utility Rule to only include tslint.json in implicitDependencies if TSLint is
+ * actually chosen by the user as part of a schematic/generator execution.
+ */
+export function updateNxJson(options: { linter: Linter }): Rule {
+  return updateJsonInTree<NxJson>('nx.json', (json) => {
+    if (options.linter === Linter.TsLint) {
+      json.implicitDependencies = json.implicitDependencies || {};
+      if (!json.implicitDependencies['tslint.json']) {
+        json.implicitDependencies['tslint.json'] = '*';
+      }
+    }
+    return json;
+  });
+}
 
 export const createAngularEslintJson = (
   projectRoot: string,

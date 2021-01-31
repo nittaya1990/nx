@@ -25,6 +25,7 @@ import { enableStrictTypeChecking } from './lib/enable-strict-type-checking';
 import {
   createAngularEslintJson,
   extraEslintDependencies,
+  updateNxJson,
 } from '../../utils/lint';
 import { wrapAngularDevkitSchematic } from '@nrwl/devkit/ngcli-adapter';
 
@@ -101,6 +102,7 @@ export default function (schema: Schema): Rule {
         : noop(),
       addModule(options),
       options.strict ? enableStrictTypeChecking(options) : noop(),
+      updateNxJson(options),
       formatFiles(options),
     ]);
   };

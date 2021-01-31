@@ -743,7 +743,6 @@ describe('workspace structure', () => {
     const extensions = readJson('.vscode/extensions.json');
     expect(extensions).toEqual({
       recommendations: [
-        'ms-vscode.vscode-typescript-tslint-plugin',
         'esbenp.prettier-vscode',
       ],
     });
