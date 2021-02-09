@@ -35,7 +35,7 @@ export async function affected(
   const projectGraph = createProjectGraph();
   let affectedGraph = nxArgs.all
     ? projectGraph
-    : filterAffected(
+    : await filterAffected(
         projectGraph,
         calculateFileChanges(parseFiles(nxArgs).files, nxArgs)
       );

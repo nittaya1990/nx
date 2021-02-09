@@ -140,13 +140,13 @@ export const commandsObject = yargs
     'format:check',
     'Check for un-formatted files',
     withFormatOptions,
-    (args) => format('check', args)
+    async (args) => await format('check', args)
   )
   .command(
     ['format:write', 'format'],
     'Overwrite un-formatted files',
     withFormatOptions,
-    (args) => format('write', args)
+    async (args) => await format('write', args)
   )
   .command(
     'workspace-lint [files..]',

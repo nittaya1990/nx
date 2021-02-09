@@ -133,9 +133,9 @@ describe('project graph', () => {
     vol.fromJSON(filesJson, '/root');
   });
 
-  it('should create nodes and dependencies with workspace projects', () => {
+  it('should create nodes and dependencies with workspace projects', async () => {
     const graph = createProjectGraph();
-    const affected = filterAffected(graph, [
+    const affected = await filterAffected(graph, [
       {
         file: 'something-for-api.txt',
         ext: '.txt',
@@ -198,7 +198,7 @@ describe('project graph', () => {
     });
   });
 
-  it('should create nodes and dependencies with npm packages', () => {
+  it('should create nodes and dependencies with npm packages', async () => {
     const graph = createProjectGraph();
     const updatedPackageJson = {
       ...packageJson,
@@ -207,7 +207,7 @@ describe('project graph', () => {
       },
     };
 
-    const affected = filterAffected(graph, [
+    const affected = await filterAffected(graph, [
       {
         file: 'package.json',
         ext: '.json',
@@ -266,7 +266,7 @@ describe('project graph', () => {
     });
   });
 
-  it('should support implicit JSON file dependencies (some projects)', () => {
+  it('should support implicit JSON file dependencies (some projects)', async () => {
     const graph = createProjectGraph();
     const updatedPackageJson = {
       ...packageJson,
@@ -275,7 +275,7 @@ describe('project graph', () => {
       },
     };
 
-    const affected = filterAffected(graph, [
+    const affected = await filterAffected(graph, [
       {
         file: 'package.json',
         ext: '.json',
@@ -287,7 +287,7 @@ describe('project graph', () => {
     expect(Object.keys(affected.nodes)).toEqual(['demo', 'demo-e2e', 'api']);
   });
 
-  it('should support implicit JSON file dependencies (all projects)', () => {
+  it('should support implicit JSON file dependencies (all projects)', async () => {
     const graph = createProjectGraph();
     const updatedPackageJson = {
       ...packageJson,
@@ -296,7 +296,7 @@ describe('project graph', () => {
       },
     };
 
-    const affected = filterAffected(graph, [
+    const affected = await filterAffected(graph, [
       {
         file: 'package.json',
         ext: '.json',

@@ -21,13 +21,13 @@ import { getTouchedProjectsInNxJson } from './locators/nx-json-changes';
 import { getTouchedProjectsInWorkspaceJson } from './locators/workspace-json-changes';
 import { getTouchedProjectsFromTsConfig } from './locators/tsconfig-json-changes';
 
-export function filterAffected(
+export async function filterAffected(
   graph: ProjectGraph,
   touchedFiles: FileChange[],
   workspaceJson: any = readWorkspaceJson(),
   nxJson: NxJson = readNxJson(),
   packageJson: any = readPackageJson()
-): ProjectGraph {
+): Promise<ProjectGraph> {
   const normalizedNxJson = normalizeNxJson(nxJson);
   // Additional affected logic should be in this array.
   const touchedProjectLocators: TouchedProjectLocator[] = [
