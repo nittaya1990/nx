@@ -15,7 +15,7 @@ import { updateJestConfig } from './lib/update-jest-config';
 
 export async function removeGenerator(tree: Tree, schema: Schema) {
   const project = readProjectConfiguration(tree, schema.projectName);
-  checkDependencies(tree, schema);
+  await checkDependencies(tree, schema);
   checkTargets(tree, schema);
   removeProject(tree, project);
   removeProjectConfig(tree, schema);

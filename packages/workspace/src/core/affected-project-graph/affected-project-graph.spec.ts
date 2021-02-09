@@ -133,8 +133,8 @@ describe('project graph', () => {
     vol.fromJSON(filesJson, '/root');
   });
 
-  it('should create nodes and dependencies with workspace projects', () => {
-    const graph = createProjectGraph();
+  it('should create nodes and dependencies with workspace projects', async () => {
+    const graph = await createProjectGraph();
     const affected = filterAffected(graph, [
       {
         file: 'something-for-api.txt',
@@ -198,8 +198,8 @@ describe('project graph', () => {
     });
   });
 
-  it('should create nodes and dependencies with npm packages', () => {
-    const graph = createProjectGraph();
+  it('should create nodes and dependencies with npm packages', async () => {
+    const graph = await createProjectGraph();
     const updatedPackageJson = {
       ...packageJson,
       dependencies: {
@@ -266,8 +266,8 @@ describe('project graph', () => {
     });
   });
 
-  it('should support implicit JSON file dependencies (some projects)', () => {
-    const graph = createProjectGraph();
+  it('should support implicit JSON file dependencies (some projects)', async () => {
+    const graph = await createProjectGraph();
     const updatedPackageJson = {
       ...packageJson,
       scripts: {
@@ -287,8 +287,8 @@ describe('project graph', () => {
     expect(Object.keys(affected.nodes)).toEqual(['demo', 'demo-e2e', 'api']);
   });
 
-  it('should support implicit JSON file dependencies (all projects)', () => {
-    const graph = createProjectGraph();
+  it('should support implicit JSON file dependencies (all projects)', async () => {
+    const graph = await createProjectGraph();
     const updatedPackageJson = {
       ...packageJson,
       devDependencies: {

@@ -49,17 +49,13 @@ describe('checkDependencies', () => {
     });
 
     it('should fatally error if any dependent exists', async () => {
-      expect(() => {
-        checkDependencies(tree, schema);
-      }).toThrow();
+      await expect(checkDependencies(tree, schema)).rejects.toThrow();
     });
 
     it('should not error if forceRemove is true', async () => {
       schema.forceRemove = true;
 
-      expect(() => {
-        checkDependencies(tree, schema);
-      }).not.toThrow();
+      await expect(checkDependencies(tree, schema)).resolves.not.toThrow();
     });
   });
 
@@ -73,9 +69,7 @@ describe('checkDependencies', () => {
     });
 
     it('should fatally error if any dependent exists', async () => {
-      expect(() => {
-        checkDependencies(tree, schema);
-      }).toThrow(
+      await expect(checkDependencies(tree, schema)).rejects.toThrow(
         `${schema.projectName} is still depended on by the following projects:\nmy-dependent`
       );
     });
@@ -83,15 +77,11 @@ describe('checkDependencies', () => {
     it('should not error if forceRemove is true', async () => {
       schema.forceRemove = true;
 
-      expect(() => {
-        checkDependencies(tree, schema);
-      }).not.toThrow();
+      await expect(checkDependencies(tree, schema)).resolves.not.toThrow();
     });
   });
 
   it('should not error if there are no dependents', async () => {
-    expect(() => {
-      checkDependencies(tree, schema);
-    }).not.toThrow();
+    await expect(checkDependencies(tree, schema)).resolves.not.toThrow();
   });
 });

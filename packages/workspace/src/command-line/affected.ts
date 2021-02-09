@@ -32,7 +32,7 @@ export async function affected(
 
   await promptForNxCloud(nxArgs.scan);
 
-  const projectGraph = createProjectGraph();
+  const projectGraph = await createProjectGraph();
   let affectedGraph = nxArgs.all
     ? projectGraph
     : filterAffected(
@@ -92,7 +92,7 @@ export async function affected(
 
       case 'dep-graph':
         const projectNames = affectedProjects.map((p) => p.name);
-        generateGraph(parsedArgs as any, projectNames);
+        await generateGraph(parsedArgs as any, projectNames);
         break;
 
       case 'print-affected':

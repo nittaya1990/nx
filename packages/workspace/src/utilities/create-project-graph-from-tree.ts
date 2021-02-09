@@ -5,10 +5,13 @@ import {
   visitNotIgnoredFiles,
 } from '@nrwl/devkit';
 import { createProjectGraph } from '../core/project-graph/project-graph';
+import { ProjectGraph } from '../core/project-graph/project-graph-models';
 import { FileData } from '../core/file-utils';
 import { extname } from 'path';
 
-export function createProjectGraphFromTree(tree: Tree) {
+export async function createProjectGraphFromTree(
+  tree: Tree
+): Promise<ProjectGraph> {
   const workspaceJson = readJson(tree, getWorkspacePath(tree));
   const nxJson = readJson(tree, 'nx.json');
 
@@ -26,7 +29,7 @@ export function createProjectGraphFromTree(tree: Tree) {
     return tree.read(path).toString('utf-8');
   };
 
-  return createProjectGraph(
+  return await createProjectGraph(
     workspaceJson,
     nxJson,
     files,

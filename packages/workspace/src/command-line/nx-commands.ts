@@ -134,25 +134,25 @@ export const commandsObject = yargs
     'dep-graph',
     'Graph dependencies within workspace',
     (yargs) => withDepGraphOptions(yargs),
-    (args) => generateGraph(args as any, [])
+    async (args) => await generateGraph(args as any, [])
   )
   .command(
     'format:check',
     'Check for un-formatted files',
     withFormatOptions,
-    (args) => format('check', args)
+    async (args) => await format('check', args)
   )
   .command(
     ['format:write', 'format'],
     'Overwrite un-formatted files',
     withFormatOptions,
-    (args) => format('write', args)
+    async (args) => await format('write', args)
   )
   .command(
     'workspace-lint [files..]',
     'Lint workspace or list of files.  Note: To exclude files from this lint rule, you can add them to the ".nxignore" file',
     noop,
-    (_) => workspaceLint()
+    async (_) => await workspaceLint()
   )
   .command(
     ['workspace-generator [name]', 'workspace-schematic [name]'],

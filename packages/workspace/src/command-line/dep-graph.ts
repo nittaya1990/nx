@@ -136,7 +136,7 @@ function filterGraph(
   return filteredGraph;
 }
 
-export function generateGraph(
+export async function generateGraph(
   args: {
     file?: string;
     host?: string;
@@ -146,8 +146,8 @@ export function generateGraph(
     groupByFolder?: boolean;
   },
   affectedProjects: string[]
-): void {
-  let graph = onlyWorkspaceProjects(createProjectGraph());
+): Promise<void> {
+  let graph = onlyWorkspaceProjects(await createProjectGraph());
 
   const projects = Object.values(graph.nodes) as ProjectGraphNode[];
   projects.sort((a, b) => {

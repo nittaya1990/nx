@@ -12,12 +12,12 @@ export interface PackageNameMapping {
   [packageName: string]: string;
 }
 
-const getProjectNamesWithDepsToRename = (
+const getProjectNamesWithDepsToRename = async (
   packageNameMapping: PackageNameMapping,
   tree: Tree
 ) => {
   const packagesToRename = Object.entries(packageNameMapping);
-  const projectGraph = getFullProjectGraphFromHost(tree);
+  const projectGraph = await getFullProjectGraphFromHost(tree);
 
   return Object.entries(projectGraph.dependencies)
     .filter(([, deps]) =>
@@ -41,7 +41,7 @@ export function renamePackageImports(packageNameMapping: PackageNameMapping) {
   return async (tree: Tree, _context: SchematicContext): Promise<void> => {
     const workspace = await getWorkspace(tree);
 
-    const projectNamesThatImportAPackageToRename = getProjectNamesWithDepsToRename(
+    const projectNamesThatImportAPackageToRename = await getProjectNamesWithDepsToRename(
       packageNameMapping,
       tree
     );

@@ -31,14 +31,14 @@ import {
 import { NxJson } from '../shared-interfaces';
 import { performance } from 'perf_hooks';
 
-export function createProjectGraph(
+export async function createProjectGraph(
   workspaceJson = readWorkspaceJson(),
   nxJson = readNxJson(),
   workspaceFiles = readWorkspaceFiles(),
   fileRead: FileRead = defaultFileRead,
   cache: false | ProjectGraphCache = readCache(),
   shouldCache: boolean = true
-): ProjectGraph {
+): Promise<ProjectGraph> {
   assertWorkspaceValidity(workspaceJson, nxJson);
   const normalizedNxJson = normalizeNxJson(nxJson);
 
@@ -56,7 +56,7 @@ export function createProjectGraph(
       nxJson: normalizedNxJson,
       fileMap: diff.filesDifferentFromCache,
     };
-    const projectGraph = buildProjectGraph(
+    const projectGraph = await buildProjectGraph(
       ctx,
       fileRead,
       diff.partiallyConstructedProjectGraph
@@ -71,7 +71,7 @@ export function createProjectGraph(
       nxJson: normalizedNxJson,
       fileMap: fileMap,
     };
-    const projectGraph = buildProjectGraph(ctx, fileRead, null);
+    const projectGraph = await buildProjectGraph(ctx, fileRead, null);
     if (shouldCache) {
       writeCache(rootFiles, projectGraph);
     }
@@ -79,7 +79,7 @@ export function createProjectGraph(
   }
 }
 
-function buildProjectGraph(
+async function buildProjectGraph(
   ctx: { nxJson: NxJson<string[]>; workspaceJson: any; fileMap: FileMap },
   fileRead: FileRead,
   projectGraph: ProjectGraph

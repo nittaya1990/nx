@@ -23,7 +23,7 @@ export async function runMany(parsedArgs: yargs.Arguments) {
 
   await promptForNxCloud(nxArgs.scan);
 
-  const projectGraph = createProjectGraph();
+  const projectGraph = await createProjectGraph();
   const projects = projectsToRun(nxArgs, projectGraph);
   const projectMap: Record<string, ProjectGraphNode> = {};
   projects.forEach((proj) => {

@@ -12,12 +12,12 @@ import { createProjectGraphFromTree } from '../../../utilities/create-project-gr
  *
  * Throws an error if the project is in use, unless the `--forceRemove` option is used.
  */
-export function checkDependencies(tree: Tree, schema: Schema) {
+export async function checkDependencies(tree: Tree, schema: Schema) {
   if (schema.forceRemove) {
     return;
   }
 
-  const graph: ProjectGraph = createProjectGraphFromTree(tree);
+  const graph: ProjectGraph = await createProjectGraphFromTree(tree);
 
   const reverseGraph = onlyWorkspaceProjects(reverse(graph));
 

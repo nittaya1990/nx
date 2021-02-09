@@ -129,8 +129,8 @@ describe('project graph', () => {
     vol.fromJSON(filesJson, '/root');
   });
 
-  it('should create nodes and dependencies with workspace projects', () => {
-    const graph = createProjectGraph();
+  it('should create nodes and dependencies with workspace projects', async () => {
+    const graph = await createProjectGraph();
 
     expect(graph.nodes).toMatchObject({
       api: { name: 'api', type: 'app' },
@@ -191,7 +191,7 @@ describe('project graph', () => {
   });
 
   it('should update the graph if the workspace file changes ', async () => {
-    let graph = createProjectGraph();
+    let graph = await createProjectGraph();
     expect(graph.nodes).toMatchObject({
       demo: { name: 'demo', type: 'app' },
     });
@@ -202,19 +202,19 @@ describe('project graph', () => {
 
     defaultFileHasher.init();
 
-    graph = createProjectGraph();
+    graph = await createProjectGraph();
     expect(graph.nodes).toMatchObject({
       demo: { name: 'demo', type: 'lib' },
     });
   });
 
-  it('should handle circular dependencies', () => {
+  it('should handle circular dependencies', async () => {
     fs.writeFileSync(
       '/root/libs/shared/util/src/index.ts',
       `import * as ui from '@nrwl/ui';`
     );
 
-    const graph = createProjectGraph();
+    const graph = await createProjectGraph();
 
     expect(graph.dependencies['shared-util']).toEqual([
       {

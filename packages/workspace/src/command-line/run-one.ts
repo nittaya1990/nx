@@ -23,7 +23,7 @@ export async function runOne(opts: {
 
   await promptForNxCloud(nxArgs.scan);
 
-  const projectGraph = createProjectGraph();
+  const projectGraph = await createProjectGraph();
   const { projects, projectsMap } = getProjects(
     projectGraph,
     nxArgs.withDeps,

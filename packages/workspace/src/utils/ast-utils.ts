@@ -360,11 +360,15 @@ export function readJsonInTree<T = any>(host: Tree, path: string): T {
 /**
  * Method for utilizing the project graph in schematics
  */
-export function getProjectGraphFromHost(host: Tree): ProjectGraph {
-  return onlyWorkspaceProjects(getFullProjectGraphFromHost(host));
+export async function getProjectGraphFromHost(
+  host: Tree
+): Promise<ProjectGraph> {
+  return onlyWorkspaceProjects(await getFullProjectGraphFromHost(host));
 }
 
-export function getFullProjectGraphFromHost(host: Tree): ProjectGraph {
+export async function getFullProjectGraphFromHost(
+  host: Tree
+): Promise<ProjectGraph> {
   const workspaceJson = readJsonInTree(host, getWorkspacePath(host));
   const nxJson = readJsonInTree<NxJson>(host, '/nx.json');
 
@@ -399,7 +403,7 @@ export function getFullProjectGraphFromHost(host: Tree): ProjectGraph {
     );
   });
 
-  return createProjectGraph(
+  return await createProjectGraph(
     workspaceJson,
     nxJson,
     workspaceFiles,
