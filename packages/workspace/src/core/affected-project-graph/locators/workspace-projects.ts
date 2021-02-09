@@ -1,10 +1,10 @@
 import * as minimatch from 'minimatch';
 import { TouchedProjectLocator } from '../affected-project-graph-models';
 
-export const getTouchedProjects: TouchedProjectLocator = (
+export const getTouchedProjects: TouchedProjectLocator = async (
   touchedFiles,
   workspaceJson
-): string[] => {
+): Promise<string[]> => {
   // sort project names with the most nested first,
   // e.g. ['libs/a/b/c', 'libs/a/b', 'libs/a']
   const projectNames = Object.entries(workspaceJson.projects)
@@ -24,11 +24,11 @@ export const getTouchedProjects: TouchedProjectLocator = (
     .filter(Boolean);
 };
 
-export const getImplicitlyTouchedProjects: TouchedProjectLocator = (
+export const getImplicitlyTouchedProjects: TouchedProjectLocator = async (
   fileChanges,
   workspaceJson,
   nxJson
-): string[] => {
+): Promise<string[]> => {
   if (!nxJson.implicitDependencies) {
     return [];
   }

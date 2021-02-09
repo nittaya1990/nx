@@ -14,43 +14,46 @@ function getFileChanges(files: string[]) {
 }
 
 describe('getTouchedProjects', () => {
-  it('should return a list of projects for the given changes', () => {
+  it('should return a list of projects for the given changes', async () => {
     const fileChanges = getFileChanges(['libs/a/index.ts', 'libs/b/index.ts']);
     const projects = {
       a: { root: 'libs/a' },
       b: { root: 'libs/b' },
       c: { root: 'libs/c' },
     };
-    expect(getTouchedProjects(fileChanges, { projects })).toEqual(['a', 'b']);
+    expect(await getTouchedProjects(fileChanges, { projects })).toEqual([
+      'a',
+      'b',
+    ]);
   });
 
-  it('should return projects with the root matching a whole directory name in the file path', () => {
+  it('should return projects with the root matching a whole directory name in the file path', async () => {
     const fileChanges = getFileChanges(['libs/a-b/index.ts']);
     const projects = {
       a: { root: 'libs/a' },
       abc: { root: 'libs/a-b-c' },
       ab: { root: 'libs/a-b' },
     };
-    expect(getTouchedProjects(fileChanges, { projects })).toEqual(['ab']);
+    expect(await getTouchedProjects(fileChanges, { projects })).toEqual(['ab']);
   });
 
-  it('should return projects with the root matching a whole directory name in the file path', () => {
+  it('should return projects with the root matching a whole directory name in the file path', async () => {
     const fileChanges = getFileChanges(['libs/a-b/index.ts']);
     const projects = {
       aaaaa: { root: 'libs/a' },
       abc: { root: 'libs/a-b-c' },
       ab: { root: 'libs/a-b' },
     };
-    expect(getTouchedProjects(fileChanges, { projects })).toEqual(['ab']);
+    expect(await getTouchedProjects(fileChanges, { projects })).toEqual(['ab']);
   });
 
-  it('should return the most qualifying match with the file path', () => {
+  it('should return the most qualifying match with the file path', async () => {
     const fileChanges = getFileChanges(['libs/a/b/index.ts']);
     const projects = {
       aaaaa: { root: 'libs/a' },
       ab: { root: 'libs/a/b' },
     };
-    expect(getTouchedProjects(fileChanges, { projects })).toEqual(['ab']);
+    expect(await getTouchedProjects(fileChanges, { projects })).toEqual(['ab']);
   });
 });
 
@@ -69,68 +72,62 @@ describe('getImplicitlyTouchedProjects', () => {
     };
   });
 
-  it('should return a list of projects for the given changes', () => {
+  it('should return a list of projects for the given changes', async () => {
     let fileChanges = getFileChanges(['styles/file1.css']);
-    expect(getImplicitlyTouchedProjects(fileChanges, null, nxJson)).toEqual([
-      'a',
-    ]);
+    expect(
+      await getImplicitlyTouchedProjects(fileChanges, null, nxJson)
+    ).toEqual(['a']);
 
     fileChanges = getFileChanges(['styles/file1.css', 'styles/file2.css']);
-    expect(getImplicitlyTouchedProjects(fileChanges, null, nxJson)).toEqual([
-      'a',
-      'b',
-      'c',
-    ]);
+    expect(
+      await getImplicitlyTouchedProjects(fileChanges, null, nxJson)
+    ).toEqual(['a', 'b', 'c']);
   });
 
-  it('should return a list of unique projects', () => {
+  it('should return a list of unique projects', async () => {
     const fileChanges = getFileChanges([
       'styles/file2.css',
       'styles/deep/file3.css',
     ]);
-    expect(getImplicitlyTouchedProjects(fileChanges, null, nxJson)).toEqual([
-      'b',
-      'c',
-      'd',
-    ]);
+    expect(
+      await getImplicitlyTouchedProjects(fileChanges, null, nxJson)
+    ).toEqual(['b', 'c', 'd']);
   });
 
-  it('should support glob path matching', () => {
+  it('should support glob path matching', async () => {
     nxJson.implicitDependencies = {
       'styles/*.css': ['a'],
       'styles/deep/file2.css': ['b', 'c'],
     };
     let fileChanges = getFileChanges(['styles/file1.css']);
-    expect(getImplicitlyTouchedProjects(fileChanges, null, nxJson)).toEqual([
-      'a',
-    ]);
+    expect(
+      await getImplicitlyTouchedProjects(fileChanges, null, nxJson)
+    ).toEqual(['a']);
   });
 
-  it('should support glob `**` path matching', () => {
+  it('should support glob `**` path matching', async () => {
     nxJson.implicitDependencies = {
       'styles/**/*.css': ['a'],
       'styles/deep/file2.css': ['b', 'c'],
     };
     let fileChanges = getFileChanges(['styles/file1.css']);
-    expect(getImplicitlyTouchedProjects(fileChanges, null, nxJson)).toEqual([
-      'a',
-    ]);
+    expect(
+      await getImplicitlyTouchedProjects(fileChanges, null, nxJson)
+    ).toEqual(['a']);
 
     fileChanges = getFileChanges(['styles/deep/file2.css']);
-    expect(getImplicitlyTouchedProjects(fileChanges, null, nxJson)).toEqual([
-      'a',
-      'b',
-      'c',
-    ]);
+    expect(
+      await getImplicitlyTouchedProjects(fileChanges, null, nxJson)
+    ).toEqual(['a', 'b', 'c']);
 
     fileChanges = getFileChanges(['styles/file1.css', 'styles/deep/file2.css']);
-    expect(getImplicitlyTouchedProjects(fileChanges, null, nxJson)).toEqual([
-      'a',
-      'b',
-      'c',
-    ]);
+    expect(
+      await getImplicitlyTouchedProjects(fileChanges, null, nxJson)
+    ).toEqual(['a', 'b', 'c']);
 
     fileChanges = getFileChanges(['styles.css']);
-    expect(getImplicitlyTouchedProjects(fileChanges, null, nxJson)).toEqual([]);
+    expect(
+      await getImplicitlyTouchedProjects(fileChanges, null, nxJson)
+    ).toEqual([]);
   });
 });

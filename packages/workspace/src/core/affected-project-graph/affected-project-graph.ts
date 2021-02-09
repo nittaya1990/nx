@@ -39,11 +39,14 @@ export async function filterAffected(
     getTouchedProjectsInWorkspaceJson,
     getTouchedProjectsFromTsConfig,
   ];
-  const touchedProjects = touchedProjectLocators.reduce((acc, f) => {
-    return acc.concat(
-      f(touchedFiles, workspaceJson, normalizedNxJson, packageJson, graph)
+
+  let touchedProjects: string[] = [];
+
+  for (const f of touchedProjectLocators) {
+    touchedProjects = touchedProjects.concat(
+      await f(touchedFiles, workspaceJson, normalizedNxJson, packageJson, graph)
     );
-  }, [] as string[]);
+  }
 
   return filterAffectedProjects(graph, {
     workspaceJson,
