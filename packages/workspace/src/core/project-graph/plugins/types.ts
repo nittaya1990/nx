@@ -1,15 +1,19 @@
-import {
+import type {
   AddProjectDependency,
   ProjectGraphContext,
   ProjectGraphNodeRecords,
 } from '../project-graph-models';
-import { FileRead } from '../../file-utils';
+import type { FileRead } from '../../file-utils';
 
-export interface BuildDependencies {
+interface BuildDependencies {
   (
     ctx: ProjectGraphContext,
     nodes: ProjectGraphNodeRecords,
     addDependency: AddProjectDependency,
     fileRead: FileRead
   ): void;
+}
+
+export interface ProjectGraphPlugin {
+  buildDependencies: BuildDependencies;
 }

@@ -29,6 +29,7 @@ export interface NxJson<T = '*' | string[]> {
       options?: object;
     };
   };
+  EXPERIMENTAL_projectGraphPlugins?: string[];
 }
 
 export interface NxJsonProjectConfig {

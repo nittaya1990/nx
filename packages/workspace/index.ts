@@ -30,6 +30,7 @@ export {
   ProjectGraphNode,
   ProjectGraphDependency,
   ProjectGraph,
+  ProjectGraphPlugin,
 } from './src/core/project-graph';
 export { ProjectGraphCache } from './src/core/nx-deps/nx-deps-cache';
 export {

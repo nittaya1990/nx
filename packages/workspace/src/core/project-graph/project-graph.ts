@@ -10,11 +10,7 @@ import {
   rootWorkspaceFileData,
 } from '../file-utils';
 import { normalizeNxJson } from '../normalize-nx-json';
-import {
-  BuildDependencies,
-  buildExplicitTypeScriptDependencies,
-  buildImplicitProjectDependencies,
-} from './build-dependencies';
+import { buildImplicitProjectDependencies } from './build-dependencies/implicit-project-dependencies';
 import {
   BuildNodes,
   buildNpmPackageNodes,
@@ -30,6 +26,9 @@ import {
 } from '../nx-deps/nx-deps-cache';
 import { NxJson } from '../shared-interfaces';
 import { performance } from 'perf_hooks';
+import typescriptProjectGraphPlugin from './plugins/typescript';
+import { appRootPath } from '../../utils/app-root';
+import { join } from 'path';
 
 export function createProjectGraph(
   workspaceJson = readWorkspaceJson(),
@@ -79,6 +78,30 @@ export function createProjectGraph(
   }
 }
 
+function loadProjectGraphPlugin(pathFromNxJson: string) {
+  try {
+    /**
+     * Support loading plugins from node_modules
+     */
+    return require(pathFromNxJson);
+  } catch (err) {
+    if (err.code !== 'MODULE_NOT_FOUND') {
+      throw err;
+    }
+    try {
+      /**
+       * Support loading workspace plugins relative to the workspace root
+       */
+      const fullWorkspacePath = join(appRootPath, pathFromNxJson);
+      return require(fullWorkspacePath);
+    } catch {
+      throw new Error(
+        `Failed to find Nx projectGraphPlugin "${pathFromNxJson}"`
+      );
+    }
+  }
+}
+
 function buildProjectGraph(
   ctx: { nxJson: NxJson<string[]>; workspaceJson: any; fileMap: FileMap },
   fileRead: FileRead,
@@ -90,14 +113,35 @@ function buildProjectGraph(
     buildWorkspaceProjectNodes(fileRead),
     buildNpmPackageNodes,
   ];
-  const buildDependenciesFns: BuildDependencies[] = [
-    buildExplicitTypeScriptDependencies,
-    buildImplicitProjectDependencies,
-  ];
+
+  let projectGraphPlugins = [typescriptProjectGraphPlugin];
+
+  const userDefinedProjectGraphPlugins =
+    ctx.nxJson.EXPERIMENTAL_projectGraphPlugins;
+
+  if (userDefinedProjectGraphPlugins) {
+    projectGraphPlugins = userDefinedProjectGraphPlugins.map((path) =>
+      loadProjectGraphPlugin(path)
+    );
+  }
+
   buildNodesFns.forEach((f) => f(ctx, builder.addNode.bind(builder), fileRead));
-  buildDependenciesFns.forEach((f) =>
-    f(ctx, builder.nodes, builder.addDependency.bind(builder), fileRead)
+
+  projectGraphPlugins.forEach((plugin) =>
+    plugin.buildDependencies(
+      ctx,
+      builder.nodes,
+      builder.addDependency.bind(builder),
+      fileRead
+    )
   );
+
+  buildImplicitProjectDependencies(
+    ctx,
+    builder.nodes,
+    builder.addDependency.bind(builder)
+  );
+
   const r = builder.build();
   performance.mark('build project graph:end');
   performance.measure(

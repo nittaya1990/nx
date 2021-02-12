@@ -9,17 +9,17 @@ import {
   ProjectGraphContext,
   ProjectGraphNode,
   DependencyType,
-} from '../project-graph-models';
-import { buildExplicitTypeScriptDependencies } from './explicit-project-dependencies';
-import { createFileMap } from '../../file-graph';
-import { readWorkspaceFiles } from '../../file-utils';
-import { appRootPath } from '../../../utilities/app-root';
-import { string } from 'prop-types';
+} from '../../project-graph-models';
+import { createFileMap } from '../../../file-graph';
+import { readWorkspaceFiles } from '../../../file-utils';
+import { appRootPath } from '../../../../utilities/app-root';
+import typescriptProjectGraphPlugin from './index';
 
-describe('explicit project dependencies', () => {
+describe('typescriptProjectGraphPlugin', () => {
   let ctx: ProjectGraphContext;
   let projects: Record<string, ProjectGraphNode>;
   let fsJson;
+
   beforeEach(() => {
     const workspaceJson = {
       projects: {
@@ -171,9 +171,14 @@ describe('explicit project dependencies', () => {
         }
       );
 
-    buildExplicitTypeScriptDependencies(ctx, projects, addDependency, (s) => {
-      return fs.readFileSync(`${appRootPath}/${s}`).toString();
-    });
+    typescriptProjectGraphPlugin.buildDependencies(
+      ctx,
+      projects,
+      addDependency,
+      (s) => {
+        return fs.readFileSync(`${appRootPath}/${s}`).toString();
+      }
+    );
 
     expect(dependencyMap).toEqual({
       proj1234: [
