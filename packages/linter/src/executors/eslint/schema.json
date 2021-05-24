@@ -94,6 +94,10 @@
     "hasTypeAwareRules": {
       "type": "boolean",
       "description": "When set to true, the linter will invalidate its cache when any of its dependencies changes."
+    },
+    "disableErrorsInline": {
+      "type": "array",
+      "description": "When an array of rule names is provided (or [\"*\"] for all rules), the errors will be disable at their source code location by `// eslint-disable` comments"
     }
   },
   "additionalProperties": false,

@@ -55,6 +55,7 @@ function createValidRunBuilderOptions(
     noEslintrc: false,
     quiet: false,
     hasTypeAwareRules: false,
+    disableErrorsInline: null,
     ...additionalOptions,
   };
 }
@@ -63,6 +64,9 @@ function setupMocks() {
   jest.resetModules();
   jest.clearAllMocks();
   jest.spyOn(process, 'chdir').mockImplementation(() => {});
+  jest.spyOn(fs, 'readFileSync').mockImplementation(() => {
+    return '';
+  });
   console.warn = jest.fn();
   console.error = jest.fn();
   console.info = jest.fn();
@@ -120,6 +124,7 @@ describe('Linter Builder', () => {
         maxWarnings: null,
         outputFile: null,
         quiet: false,
+        disableErrorsInline: null,
       }),
       mockContext
     );
@@ -137,6 +142,7 @@ describe('Linter Builder', () => {
       outputFile: null,
       quiet: false,
       noEslintrc: false,
+      disableErrorsInline: null,
     });
   });
 
@@ -520,5 +526,59 @@ describe('Linter Builder', () => {
       mockContext
     );
     expect(fs.writeFileSync).not.toHaveBeenCalled();
+  });
+
+  describe('disableErrorsInline', () => {
+    it('should add applicable `// eslint-disable` comments to the source code locations of errors', async () => {
+      mockReports = [
+        {
+          filePath: '/some/file.ts',
+          errorCount: 2,
+          warningCount: 1,
+          results: [],
+          usedDeprecatedRules: [],
+          messages: [
+            {
+              ruleId: 'ruleA',
+              severity: 2,
+              message: 'Mock error 1.',
+            },
+            {
+              ruleId: 'ruleB',
+              severity: 2,
+              message: 'Mock error 2.',
+            },
+            {
+              ruleId: 'ruleC',
+              severity: 1,
+              message: 'Mock warning 1.',
+            },
+          ],
+        },
+      ];
+      setupMocks();
+      await lintExecutor(
+        createValidRunBuilderOptions({
+          eslintConfig: './.eslintrc.json',
+          lintFilePatterns: ['includedFile1'],
+          format: 'json',
+          disableErrorsInline: ['*'],
+        }),
+        mockContext
+      );
+      // Should not be called because the errors have effectively been muted
+      expect(console.error).not.toHaveBeenCalledWith(
+        'Lint errors found in the listed files.\n'
+      );
+      expect(console.warn).toHaveBeenCalledWith(
+        'Lint warnings found in the listed files.\n'
+      );
+      expect(fs.writeFileSync).toHaveBeenCalledWith(
+        '/some/file.ts',
+        // ruleC is intentionally not included because it only has a warning associated with it
+        `// eslint-disable-next-line ruleA, ruleB
+`
+      );
+    });
   });
 });

@@ -1,7 +1,7 @@
 import { ExecutorContext } from '@nrwl/devkit';
 import { ESLint } from 'eslint';
 
-import { writeFileSync } from 'fs';
+import { readFileSync, writeFileSync } from 'fs';
 import { dirname, join, resolve } from 'path';
 
 import { Schema } from './schema';
@@ -65,6 +65,91 @@ export default async function run(
 
   // output fixes to disk, if applicable based on the options
   await projectESLint.ESLint.outputFixes(lintResults);
+
+  // If disableErrorsInline has been set, filter out the rules the have been configured
+  if (
+    Array.isArray(options.disableErrorsInline) &&
+    options.disableErrorsInline.length > 0
+  ) {
+    const toBeInlineDisabled: ESLint.LintResult[] = [];
+    const remainingAfterInlineDisabled: ESLint.LintResult[] = [];
+
+    lintResults.forEach((result) => {
+      const toBeInlineDisabledResult: ESLint.LintResult = {
+        ...result,
+        messages: [],
+      };
+      const remainingAfterInlineDisabledResult: ESLint.LintResult = {
+        ...result,
+        messages: [],
+      };
+
+      for (const message of result.messages) {
+        // Special "match all" syntax
+        if (
+          options.disableErrorsInline.length === 1 &&
+          options.disableErrorsInline[0] === '*'
+        ) {
+          toBeInlineDisabledResult.messages.push(message);
+          continue;
+        }
+        if (options.disableErrorsInline.includes(message.ruleId)) {
+          toBeInlineDisabledResult.messages.push(message);
+          continue;
+        }
+        remainingAfterInlineDisabledResult.messages.push(message);
+      }
+
+      toBeInlineDisabledResult.errorCount =
+        toBeInlineDisabledResult.messages.length;
+      remainingAfterInlineDisabledResult.errorCount =
+        remainingAfterInlineDisabledResult.messages.length;
+
+      toBeInlineDisabled.push(toBeInlineDisabledResult);
+      remainingAfterInlineDisabled.push(remainingAfterInlineDisabledResult);
+    });
+
+    lintResults = remainingAfterInlineDisabled;
+
+    for (const resultToBeInlineDisabled of toBeInlineDisabled) {
+      const processedLinesAndRules = new Map<number, Set<string>>();
+      const currentFileContents = readFileSync(
+        resultToBeInlineDisabled.filePath,
+        { encoding: 'utf-8' }
+      );
+      const lines = currentFileContents.split('\n');
+
+      // need to start bottom up so the lines aren't changed prematurely
+      const sortedMessages = resultToBeInlineDisabled.messages.sort(
+        (a, b) => b.line - a.line
+      );
+      sortedMessages.forEach((message) => {
+        // Errors only, not warnings
+        if (message.severity !== 2) {
+          return;
+        }
+        let disabledRulesForLine = processedLinesAndRules.get(message.line);
+
+        if (!disabledRulesForLine) {
+          disabledRulesForLine = new Set();
+          processedLinesAndRules.set(message.line, disabledRulesForLine);
+        }
+
+        disabledRulesForLine.add(message.ruleId);
+      });
+
+      for (const [line, rules] of Array.from(
+        processedLinesAndRules.entries()
+      )) {
+        lines.splice(
+          line - 1,
+          0,
+          `// eslint-disable-next-line ${Array.from(rules).join(', ')}`
+        );
+      }
+      writeFileSync(resultToBeInlineDisabled.filePath, lines.join('\n'));
+    }
+  }
 
   for (const result of lintResults) {
     if (result.errorCount || result.warningCount) {

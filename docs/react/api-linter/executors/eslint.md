@@ -21,6 +21,12 @@ Type: `string`
 
 Path to the cache file or directory.
 
+### disableErrorsInline
+
+Type: `array`
+
+When an array of rule names is provided (or ["*"] for all rules), the errors will be disable at their source code location by `// eslint-disable` comments
+
 ### eslintConfig
 
 Type: `string`
