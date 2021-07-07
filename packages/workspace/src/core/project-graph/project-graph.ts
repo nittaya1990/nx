@@ -45,6 +45,10 @@ export async function createProjectGraphAsync(): Promise<ProjectGraph> {
   return createProjectGraph();
 }
 
+// TODO(v13): remove this deprecated function
+/**
+ * @deprecated This function is deprecated in favor of the new asynchronous version {@link createProjectGraphAsync}
+ */
 export function createProjectGraph(
   workspaceJson = readWorkspaceJson(),
   nxJson = readNxJson(),
