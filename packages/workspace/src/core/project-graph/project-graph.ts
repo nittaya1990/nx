@@ -41,6 +41,10 @@ import {
 } from '../nx-deps/nx-deps-cache';
 import { performance } from 'perf_hooks';
 
+export async function createProjectGraphAsync(): Promise<ProjectGraph> {
+  return createProjectGraph();
+}
+
 export function createProjectGraph(
   workspaceJson = readWorkspaceJson(),
   nxJson = readNxJson(),

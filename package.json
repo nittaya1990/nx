@@ -1,6 +1,6 @@
 {
   "name": "@nrwl/nx-source",
-  "version": "12.5.0",
+  "version": "700.0.4",
   "description": "Smart, Extensible Build Framework",
   "homepage": "https://nx.dev",
   "private": true,
@@ -98,6 +98,7 @@
     "@types/jest": "26.0.8",
     "@types/marked": "^2.0.0",
     "@types/node": "14.14.37",
+    "@types/node-ipc": "^9.1.4",
     "@types/prettier": "2.3.0",
     "@types/react": "17.0.3",
     "@types/react-dom": "17.0.3",
@@ -263,6 +264,7 @@
     "document-register-element": "^1.13.1",
     "glob": "7.1.4",
     "gray-matter": "^4.0.2",
+    "node-ipc": "^9.1.4",
     "react": "17.0.2",
     "react-copy-to-clipboard": "^5.0.3",
     "react-dom": "17.0.2",

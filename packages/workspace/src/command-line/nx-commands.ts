@@ -1,8 +1,9 @@
-import { execSync } from 'child_process';
 import { getPackageManagerCommand, writeJsonFile } from '@nrwl/devkit';
+import { execSync, spawn } from 'child_process';
+import { openSync } from 'fs';
+import * as path from 'path';
 import * as yargs from 'yargs';
 import { nxVersion } from '../utils/versions';
-import * as path from 'path';
 
 const noop = (yargs: yargs.Argv): yargs.Argv => yargs;
 
@@ -123,6 +124,21 @@ export const commandsObject = yargs
         ...args,
         target: 'lint',
       })
+  )
+  .command(
+    'daemon:start',
+    'Start the project graph daemon server in the background',
+    (yargs) => withDepGraphOptions(yargs),
+    async () => {
+      const logFile = './daemon-server.log';
+      const out = openSync(logFile, 'a');
+      const err = openSync(logFile, 'a');
+      spawn('node', ['./start-project-graph-daemon-server.js'], {
+        cwd: __dirname,
+        stdio: ['ignore', out, err], // piping stdout and stderr to logFile
+        detached: true,
+      }).unref();
+    }
   )
   .command(
     'dep-graph',
